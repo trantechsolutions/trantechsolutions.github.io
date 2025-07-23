@@ -1,14 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TranTech Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Optional: You can configure Tailwind CSS here if needed
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#1e40af', // Example custom color
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <h1>Welcome to TranTech Solutions</h1>
-    <p>Check out my projects:</p>
-    <ul>
-        <li><a href="https://apps.trantech.solutions">My Awesome App</a></li>
-    </ul>
+<body class="bg-slate-900 text-slate-300 antialiased">
+
+    <header class="container mx-auto max-w-4xl px-6 py-12 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white">
+            TranTech Solutions
+        </h1>
+        <p class="mt-4 text-lg text-slate-400">
+            Welcome to my portfolio of web applications and projects.
+        </p>
+    </header>
+
+    <main class="container mx-auto max-w-5xl px-6">
+        <div id="app-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <footer class="text-center py-12 mt-12">
+        <p class="text-slate-500">&copy; 2025 TranTech Solutions. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const appListContainer = document.getElementById('app-list');
+
+            fetch('apps.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(apps => {
+                    if (apps.length === 0) {
+                        appListContainer.innerHTML = `<p class="text-center col-span-full">No projects to display yet.</p>`;
+                        return;
+                    }
+                    
+                    let content = '';
+                    apps.forEach(app => {
+                        // Generate tag elements
+                        const tagsHtml = app.tags.map(tag => 
+                            `<span class="inline-block bg-slate-700 text-slate-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">${tag}</span>`
+                        ).join('');
+
+                        // Create the HTML for each app card using template literals
+                        content += `
+                        <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 ease-in-out">
+                            <img src="${app.image}" alt="${app.name}" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h2 class="text-2xl font-bold text-white mb-2">${app.name}</h2>
+                                <p class="text-slate-400 mb-4 h-24">${app.description}</p>
+                                <div class="mb-4">
+                                    ${tagsHtml}
+                                </div>
+                                <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="inline-block w-full text-center bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
+                                    Launch App
+                                </a>
+                            </div>
+                        </div>
+                        `;
+                    });
+                    appListContainer.innerHTML = content;
+                })
+                .catch(error => {
+                    console.error('Error fetching or parsing apps:', error);
+                    appListContainer.innerHTML = `<p class="text-center text-red-400 col-span-full">Could not load projects. Please try again later.</p>`;
+                });
+        });
+    </script>
+
 </body>
 </html>
